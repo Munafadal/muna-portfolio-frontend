@@ -1,0 +1,9 @@
+
+# deps
+node_modules/
+
+# installers
+*.deb
+
+# env
+.env
