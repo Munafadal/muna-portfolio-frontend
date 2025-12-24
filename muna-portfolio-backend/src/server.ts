@@ -1,38 +1,23 @@
-import express from "express";
 import dotenv from "dotenv";
-import { sequelize } from "./config/database";
-import profileRoutes from "./routes/profileRoutes";
-
 dotenv.config();
 
-const app = express();
-const port = Number(process.env.PORT) || 4000;
+import { app } from "./app";
+import { sequelize } from "./config/database";
 
-app.use(express.json());
+const PORT = Number(process.env.PORT || 4000);
 
-// Health check
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
-
-// Profile API
-app.use("/api/profiles", profileRoutes);
-
-const startServer = async () => {
+async function start() {
   try {
     await sequelize.authenticate();
-    console.log("Database connection established.");
-
-    // Sync models (creates or updates tables)
-    await sequelize.sync({ alter: true }); // dev: keep schema in sync
-
-    app.listen(port, () => {
-      console.log(`Server running on http://localhost:${port}`);
+    await sequelize.sync(); // for dev; in production use migrations
+    app.listen(PORT, () => {
+      console.log(`API running on http://localhost:${PORT}`);
+      console.log(`Swagger on http://localhost:${PORT}/api/docs`);
     });
-  } catch (error) {
-    console.error("Unable to start server:", error);
+  } catch (err) {
+    console.error("Failed to start server:", err);
     process.exit(1);
   }
-};
+}
 
-startServer();
+start();

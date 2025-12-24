@@ -3,15 +3,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const dbName = process.env.DB_NAME as string;
-const dbUser = process.env.DB_USER as string;
-const dbPassword = process.env.DB_PASSWORD || "";
-const dbHost = process.env.DB_HOST || "localhost";
-const dbPort = Number(process.env.DB_PORT) || 3306;
+const DB_NAME = process.env.DB_NAME || "portfolio_db";
+const DB_USER = process.env.DB_USER || "postgres";
+const DB_PASS = process.env.DB_PASS || "postgres";
+const DB_HOST = process.env.DB_HOST || "localhost";
+const DB_PORT = Number(process.env.DB_PORT || 5432);
 
-export const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
-  host: dbHost,
-  port: dbPort,
-  dialect: "mysql",
+export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
+  host: DB_HOST,
+  port: DB_PORT,
+  dialect: "postgres",
   logging: false,
 });
