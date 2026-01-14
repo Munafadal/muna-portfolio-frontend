@@ -16,6 +16,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/hobbies" element={<HobbiesPage />} />
       <Route path="/blog" element={<BlogPage />} />
       <Route path="*" element={<Navigate to="/profile" replace />} />
+    
     </Routes>
   );
 };

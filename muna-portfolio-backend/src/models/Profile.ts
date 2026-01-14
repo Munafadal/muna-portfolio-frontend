@@ -12,21 +12,23 @@ export interface ProfileAttributes {
   email: string;
   phoneNumber: string | null;
   address: string | null;
+  cv: string | null;              // ✅ keep only this
   github: string | null;
   twitter: string | null;
   linkedin: string | null;
-  expectedSalery: number | null; // keeping the spelling you requested
+  expectedSalery: string | null;  // ✅ recommended with DECIMAL
   ownACar: boolean;
   haveDrivingLicence: boolean;
   noticePeriod: string | null;
   immigrationStatus: string | null;
   references: string | null;
   willingToRelocate: boolean;
-  languages: string | null; // e.g. "English, Arabic"
-  skills: string | null; // e.g. "Node.js, TypeScript"
+  languages: string | null;
+  skills: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 
 export interface ProfileCreationAttributes
   extends Optional<
@@ -38,7 +40,8 @@ export interface ProfileCreationAttributes
     | "availability"
     | "dateOfBirth"
     | "phoneNumber"
-    | "address"
+  | "address"
+    | "cv"
     | "github"
     | "twitter"
     | "linkedin"
@@ -67,10 +70,11 @@ export class Profile
   public email!: string;
   public phoneNumber!: string | null;
   public address!: string | null;
+  public cv!: string | null;
   public github!: string | null;
   public twitter!: string | null;
   public linkedin!: string | null;
-  public expectedSalery!: number | null;
+  public expectedSalery!: string | null;
   public ownACar!: boolean;
   public haveDrivingLicence!: boolean;
   public noticePeriod!: string | null;
@@ -83,13 +87,15 @@ export class Profile
   public readonly updatedAt!: Date;
 }
 
+
 Profile.init(
   {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
+  id: {
+  type: DataTypes.INTEGER,
+  autoIncrement: true,
+  primaryKey: true,
+},
+
     name: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -130,6 +136,9 @@ Profile.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+  cv: {
+  type: DataTypes.STRING(255),
+},
     github: {
       type: DataTypes.STRING(255),
       allowNull: true,

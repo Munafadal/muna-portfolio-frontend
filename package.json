@@ -10,11 +10,13 @@
     "typescript": "^5.9.3",
     "vite": "^7.2.4"
   },
+  {
   "scripts": {
-    "dev": "vite --port 5173",
-    "build": "vite build",
-    "preview": "vite preview --port 5173"
-  },
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  }
+}
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
