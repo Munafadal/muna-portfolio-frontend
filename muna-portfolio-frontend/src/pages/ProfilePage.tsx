@@ -1,5 +1,6 @@
 // src/pages/ProfilePage.tsx
 import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 // Frontend version of your ProfileAttributes
 type ProfileAttributes = {
@@ -42,7 +43,7 @@ const fallbackProfile: ProfileAttributes = {
   address: "London, United Kingdom",
   github: "https://github.com/your-github",
   twitter: null,
-  cv: "https://example.com/muna-cv.pdf", // ✅ add this (or null)
+  cv: "/uploads/cv-1769939464737-895233691.docx ", // ✅ add this (or null)
   linkedin: "https://linkedin.com/in/your-linkedin",
   expectedSalery: 65000,
   ownACar: false,
@@ -79,7 +80,8 @@ export const ProfilePage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch("http://localhost:4000/api/profile");
+        const res = await fetch("/api/profile");
+
         if (!res.ok) {
           throw new Error(`Request failed (${res.status})`);
         }
@@ -135,15 +137,6 @@ export const ProfilePage: React.FC = () => {
             {profile.bio ||
               "I build modern web applications with a focus on clean code, performance and great user experience."}
           </p>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-fuchsia-500/40 hover:brightness-110 transition">
-              View my projects
-            </button>
-            <button className="inline-flex items-center justify-center rounded-full border border-slate-600 bg-slate-900 px-5 py-2 text-sm font-medium text-slate-100 hover:bg-slate-800 transition">
-              Contact me
-            </button>
-          </div>
 
           <div className="flex flex-wrap gap-4 pt-4 text-xs text-slate-400">
             {profile.location && (
@@ -223,14 +216,12 @@ export const ProfilePage: React.FC = () => {
 
   <div className="flex flex-wrap gap-2">
     {profile.cv && (
-      <a
-        href={profile.cv}
-        target="_blank"
-        rel="noreferrer"
+      <Link
+        to="/cv"
         className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 hover:border-emerald-500 hover:text-white transition"
       >
         CV
-      </a>
+      </Link>
     )}
 
     {profile.github && (

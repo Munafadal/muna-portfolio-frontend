@@ -1,6 +1,9 @@
 // src/components/layout/SiteHeader.tsx
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { FaGithub, FaLinkedin, FaFilePdf } from "react-icons/fa";
+
+
 
 type NavItem = {
   label: string;
@@ -41,7 +44,34 @@ export const SiteHeader: React.FC = () => {
             </div>
           </div>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-2 md:flex">
+            <div className="flex items-center gap-2">
+              <a
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-xs text-slate-300 transition hover:border-emerald-500 hover:bg-slate-800 hover:text-white"
+              >
+                <span className="text-[10px]"><FaFilePdf /></span> CV
+              </a>
+              <a
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-xs text-slate-300 transition hover:border-indigo-500 hover:bg-slate-800 hover:text-white"
+              >
+                <span className="text-[10px]"><FaGithub /></span> GitHub
+              </a>
+              <a
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-xs text-slate-300 transition hover:border-sky-500 hover:bg-slate-800 hover:text-white"
+              >
+                <span className="text-[10px]"><FaLinkedin /></span> LinkedIn
+              </a>
+            </div>
+            <nav className="flex items-center gap-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
@@ -57,7 +87,8 @@ export const SiteHeader: React.FC = () => {
                 {item.label}
               </NavLink>
             ))}
-          </nav>
+            </nav>
+          </div>
         </div>
       </header>
 

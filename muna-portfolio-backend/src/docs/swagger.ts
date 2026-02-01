@@ -8,7 +8,10 @@ export const swaggerSpec = swaggerJSDoc({
       version: "1.0.0",
       description: "Backend API for portfolio profile data",
     },
-    servers: [{ url: "http://localhost:4000" }],
+    servers: [
+  { url: "http://localhost:4000" }
+],
+
   },
   apis: ["./src/routes/*.ts"], // reads JSDoc from routes
 });

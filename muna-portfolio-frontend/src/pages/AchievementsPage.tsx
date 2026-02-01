@@ -8,7 +8,7 @@ const achievements = [
   },
   {
     label: "Years of experience",
-    value: "3+",
+    value: "1+",
     accent: "from-emerald-400 to-teal-500",
   },
   {

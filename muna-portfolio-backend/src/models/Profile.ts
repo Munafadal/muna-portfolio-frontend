@@ -138,6 +138,7 @@ Profile.init(
     },
   cv: {
   type: DataTypes.STRING(255),
+      allowNull: true,
 },
     github: {
       type: DataTypes.STRING(255),

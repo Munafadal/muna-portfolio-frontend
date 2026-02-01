@@ -80,6 +80,14 @@ export const SiteHeader: React.FC = () => {
                 {item.label}
               </NavLink>
             ))}
+            <NavLink
+              to="/cv"
+              className={({ isActive }) =>
+                [linkBase, isActive ? linkActive : linkInactive].join(" ")
+              }
+            >
+              CV
+            </NavLink>
           </nav>
 
           {/* mobile placeholder */}
