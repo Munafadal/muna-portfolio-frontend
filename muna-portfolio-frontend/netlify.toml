@@ -2,8 +2,9 @@
 # IMPORTANT: This file must be in the root of your GitHub repository
 
 [build]
-  command = "npm install && npm run build"
-  publish = "dist"
+  command = "cd muna-portfolio-frontend && npm install && npm run build"
+  publish = "muna-portfolio-frontend/dist"
+  base = "muna-portfolio-frontend"
 
 [build.environment]
   NODE_VERSION = "18"
