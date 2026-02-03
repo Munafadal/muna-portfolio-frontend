@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "ls -la && pwd && if [ -d muna-portfolio-backend ]; then cd muna-portfolio-backend && npm install && npm run build; else echo 'Directory not found, listing:' && ls -la; fi"
+    "buildCommand": "cd muna-portfolio-backend && npm install && npm run build"
   },
   "deploy": {
     "startCommand": "cd muna-portfolio-backend && npm start",
