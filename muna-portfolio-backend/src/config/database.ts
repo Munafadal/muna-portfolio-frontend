@@ -7,10 +7,12 @@ try {
   if (process.env.DATABASE_URL) {
     // Use DATABASE_URL if provided (format: postgres://user:pass@host:port/dbname)
     console.log("📦 Using DATABASE_URL for database connection");
+    console.log("📦 DATABASE_URL host:", process.env.DATABASE_URL.match(/@([^:]+)/)?.[1] || "unknown");
     // Ensure the URL uses postgresql:// not postgres:// for better compatibility
     const dbUrl = process.env.DATABASE_URL.replace(/^postgres:\/\//, "postgresql://");
     sequelize = new Sequelize(dbUrl, {
-      dialect: "postgres",
+      dialect: "postgres", // Explicitly set PostgreSQL
+      dialectModule: require("pg"), // Explicitly use pg module
       logging: false,
       dialectOptions: {
         ssl: process.env.DATABASE_URL?.includes("sslmode=require") || 
