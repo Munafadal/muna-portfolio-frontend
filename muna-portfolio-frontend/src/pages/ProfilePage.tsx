@@ -1,6 +1,7 @@
 // src/pages/ProfilePage.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { getApiUrl, getBackendUrl } from "../config/api";
 
 // Frontend version of your ProfileAttributes
 type ProfileAttributes = {
@@ -80,7 +81,7 @@ export const ProfilePage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch("/api/profile");
+        const res = await fetch(getApiUrl("/api/profile"));
 
         if (!res.ok) {
           throw new Error(`Request failed (${res.status})`);

@@ -1,5 +1,6 @@
 // src/pages/CVPage.tsx
 import React, { useEffect, useState } from "react";
+import { getApiUrl, getBackendUrl } from "../config/api";
 
 type ProfileAttributes = {
   id: number;
@@ -26,7 +27,7 @@ export const CVPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch("/api/profile");
+        const res = await fetch(getApiUrl("/api/profile"));
 
         if (!res.ok) {
           throw new Error(`Request failed (${res.status})`);
@@ -53,15 +54,7 @@ export const CVPage: React.FC = () => {
   // Helper function to get full CV URL
   const getCVUrl = (cv: string | null): string | null => {
     if (!cv) return null;
-    // If it's already a full URL, return as is
-    if (cv.startsWith("http://") || cv.startsWith("https://")) {
-      return cv;
-    }
-    // If it's a relative path, prepend backend URL
-    if (cv.startsWith("/")) {
-      return `http://127.0.0.1:4000${cv}`;
-    }
-    return cv;
+    return getBackendUrl(cv);
   };
 
   return (
