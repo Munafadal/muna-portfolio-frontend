@@ -2,8 +2,8 @@
 # IMPORTANT: This file must be in the root of your GitHub repository
 
 [build]
-  command = "cd muna-portfolio-frontend && npm install && npm run build"
-  publish = "muna-portfolio-frontend/dist"
+  command = "npm install && npm run build"
+  publish = "dist"
   base = "muna-portfolio-frontend"
 
 [build.environment]
@@ -14,10 +14,12 @@
 [build.processing]
   skip_processing = false
 
-# API Proxy - Update with your backend URL
+# API Proxy - Points to Railway backend
+# TODO: Replace YOUR_RAILWAY_BACKEND_URL with your actual Railway URL
+# Example: https://muna-portfolio-frontend-production-xxxx.up.railway.app
 [[redirects]]
   from = "/api/*"
-  to = "https://your-backend-url.com/api/:splat"
+     to = "https://muna-portfolio-frontend-production-xxxx.up.railway.app/api/:splat"
   status = 200
   force = true
 
