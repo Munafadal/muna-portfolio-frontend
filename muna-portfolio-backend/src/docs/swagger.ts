@@ -9,7 +9,16 @@ export const swaggerSpec = swaggerJSDoc({
       description: "Backend API for portfolio profile data",
     },
     servers: [
-  { url: "http://localhost:4000" }
+      { 
+        url: process.env.RAILWAY_PUBLIC_DOMAIN 
+          ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` 
+          : process.env.BACKEND_URL || "http://localhost:4000",
+        description: "Production server"
+      },
+      { 
+        url: "http://localhost:4000",
+        description: "Local development server"
+      }
 ],
 
   },
