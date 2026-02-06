@@ -295,11 +295,55 @@ profileRouter.put("/:id", async (req, res) => {
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
     }
+    
+    // Validate email format if email is being updated
+    if (req.body.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email)) {
+        return res.status(400).json({ 
+          message: "Validation error",
+          errors: { email: "Invalid email format" }
+        });
+      }
+    }
+    
     await profile.update(req.body);
     return res.json(profile);
-  } catch (err) {
+  } catch (err: any) {
     console.error("UPDATE PROFILE ERROR:", err);
-    return res.status(500).json({ message: "Failed to update profile" });
+    
+    // Handle Sequelize validation errors
+    if (err.name === "SequelizeValidationError") {
+      const errors: Record<string, string> = {};
+      err.errors.forEach((e: any) => {
+        errors[e.path] = e.message;
+      });
+      return res.status(400).json({ 
+        message: "Validation error",
+        errors 
+      });
+    }
+    
+    // Handle unique constraint errors (duplicate email)
+    if (err.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({ 
+        message: "A profile with this email already exists" 
+      });
+    }
+    
+    // Handle database errors
+    if (err.name === "SequelizeDatabaseError") {
+      return res.status(400).json({ 
+        message: "Database error",
+        error: process.env.NODE_ENV === "development" ? err.message : undefined
+      });
+    }
+    
+    // Generic error with more details in development
+    return res.status(500).json({ 
+      message: "Failed to update profile",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined
+    });
   }
 });
 
