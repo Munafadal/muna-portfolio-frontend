@@ -6,6 +6,7 @@ import { AchievementsPage } from "../pages/AchievementsPage";
 import { HobbiesPage } from "../pages/HobbiesPage";
 import { BlogPage } from "../pages/BlogPage";
 import { CVPage } from "../pages/CVPage";
+import { ContactPage } from "../pages/ContactPage";
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -17,8 +18,8 @@ export const AppRoutes: React.FC = () => {
       <Route path="/hobbies" element={<HobbiesPage />} />
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/cv" element={<CVPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<Navigate to="/profile" replace />} />
-    
     </Routes>
   );
 };
