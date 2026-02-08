@@ -16,7 +16,9 @@ export const getBackendUrl = (path: string): string => {
     return path;
   }
   if (path.startsWith('/')) {
-    return `${BACKEND_URL}${path}`;
+    // Always use BACKEND_URL if available, otherwise fallback to API_BASE_URL
+    const baseUrl = BACKEND_URL !== 'http://127.0.0.1:4000' ? BACKEND_URL : (API_BASE_URL || 'http://127.0.0.1:4000');
+    return `${baseUrl}${path}`;
   }
   return path;
 };
