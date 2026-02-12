@@ -42,6 +42,45 @@ const fallbackProjects: Project[] = [
     featured: false,
     order: 1,
   },
+  {
+    id: 3,
+    title: "Portfolio",
+    description:
+      "Personal portfolio built with React, Vite, TypeScript, and Tailwind, styled with a custom Divi-inspired dark theme.",
+    tech: "React, Vite, TypeScript, Tailwind",
+    highlight: "Frontend · UI/UX",
+    url: null,
+    githubUrl: null,
+    imageUrl: null,
+    featured: false,
+    order: 2,
+  },
+  {
+    id: 4,
+    title: "Geo Addressing System",
+    description:
+      "Tools for managing and searching location data, with a focus on accuracy and usability.",
+    tech: "React, Node, PostgreSQL",
+    highlight: "Data · APIs",
+    url: null,
+    githubUrl: null,
+    imageUrl: null,
+    featured: false,
+    order: 3,
+  },
+  {
+    id: 5,
+    title: "Internal Tools",
+    description:
+      "Dashboards and internal tools to streamline workflows and help teams move faster.",
+    tech: "React, TypeScript, REST APIs",
+    highlight: "Productivity",
+    url: null,
+    githubUrl: null,
+    imageUrl: null,
+    featured: false,
+    order: 4,
+  },
 ];
 
 export const ProjectsPage: React.FC = () => {
@@ -107,20 +146,21 @@ export const ProjectsPage: React.FC = () => {
         </p>
       </header>
 
-      {loading && (
-        <div className="text-center py-10">
-          <p className="text-slate-400">Loading projects...</p>
-        </div>
-      )}
-
       {error && !loading && (
-        <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4">
+        <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 mb-4">
           <p className="text-sm text-yellow-300">
             ⚠️ {error}. Showing fallback projects.
           </p>
         </div>
       )}
 
+      {loading && projects.length === 0 && (
+        <div className="text-center py-10">
+          <p className="text-slate-400">Loading projects...</p>
+        </div>
+      )}
+
+      {projects.length > 0 && (
       <section className="grid gap-6 md:grid-cols-3">
         {projects.map((project) => (
           <article
@@ -177,6 +217,13 @@ export const ProjectsPage: React.FC = () => {
           </article>
         ))}
       </section>
+      )}
+
+      {!loading && projects.length === 0 && (
+        <div className="text-center py-10">
+          <p className="text-slate-400">No projects found.</p>
+        </div>
+      )}
     </div>
   );
 };
