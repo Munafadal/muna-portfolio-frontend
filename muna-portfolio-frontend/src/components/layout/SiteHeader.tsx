@@ -25,14 +25,18 @@ const linkActive =
 
 export const SiteHeader: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close modal with Escape key
+  // Close mobile menu when clicking outside or pressing Escape
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        setMobileMenuOpen(false);
+      }
     };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
   return (
@@ -91,12 +95,88 @@ export const SiteHeader: React.FC = () => {
             </NavLink>
           </nav>
 
-          {/* mobile placeholder */}
-          <div className="md:hidden">
-            <span className="text-xs text-slate-300/80">Menu</span>
-          </div>
+          {/* Mobile menu button - Always visible on mobile */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-3 rounded-lg text-white bg-slate-800/80 border border-slate-700 hover:bg-slate-700 hover:border-indigo-500/50 transition z-50 relative shadow-lg"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
       </header>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 z-50 bg-slate-950 backdrop-blur-xl"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div 
+            className="flex flex-col h-full pt-24 px-6 pb-6 overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-white mb-1">Navigation</h2>
+              <p className="text-xs text-slate-400">Tap a page to navigate</p>
+            </div>
+            <nav className="flex flex-col gap-2 flex-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.end}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                  }}
+                  className={({ isActive }) =>
+                    [
+                      "rounded-lg px-4 py-4 text-base font-medium transition-colors text-left",
+                      isActive 
+                        ? "bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-md shadow-fuchsia-500/40" 
+                        : "text-slate-200/80 hover:text-white hover:bg-white/10 border border-slate-800",
+                    ].join(" ")
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+              <NavLink
+                to="/cv"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                }}
+                className={({ isActive }) =>
+                  [
+                    "rounded-lg px-4 py-4 text-base font-medium transition-colors text-left",
+                    isActive 
+                      ? "bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-md shadow-fuchsia-500/40" 
+                      : "text-slate-200/80 hover:text-white hover:bg-white/10 border border-slate-800",
+                  ].join(" ")
+                }
+              >
+                CV
+              </NavLink>
+            </nav>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-6 px-4 py-3 rounded-lg border-2 border-slate-700 bg-slate-900/50 text-slate-300 hover:bg-white/10 hover:text-white transition font-medium"
+            >
+              Close Menu
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Image modal */}
       {open && (

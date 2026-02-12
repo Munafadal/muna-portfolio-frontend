@@ -1,0 +1,14 @@
+# App Icons Required
+
+Place your app icons here:
+- icon-192.png (192x192 pixels)
+- icon-512.png (512x512 pixels)
+
+These icons will be used when users install your portfolio as a mobile app.
+
+You can:
+1. Use your profile image resized to these dimensions
+2. Create a custom logo/icon
+3. Use an online icon generator
+
+See MOBILE_APP_SETUP.md for detailed instructions.

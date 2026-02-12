@@ -174,7 +174,7 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs text-slate-300">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
               <div className="space-y-1">
                 <p className="text-[11px] text-slate-400">Expected salary</p>
                 <p className="text-sm font-semibold text-slate-100">
@@ -197,7 +197,7 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs text-slate-300 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 pt-1">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
                 <span>
