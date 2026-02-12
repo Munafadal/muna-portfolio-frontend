@@ -54,7 +54,10 @@ export const CVPage: React.FC = () => {
   // Helper function to get full CV URL
   const getCVUrl = (cv: string | null): string | null => {
     if (!cv) return null;
-    return getBackendUrl(cv);
+    const url = getBackendUrl(cv);
+    // Debug: log the URL being used
+    console.log('CV URL:', cv, '→ Full URL:', url);
+    return url;
   };
 
   return (

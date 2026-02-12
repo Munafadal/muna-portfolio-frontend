@@ -7,6 +7,7 @@ import { swaggerSpec } from "./docs/swagger";
 import { profileRouter } from "./routes/profile.routes"; // or profileRoutes
 import { authRouter } from "./routes/auth.routes";
 import { cvRouter } from "./routes/cvRoutes";
+import { projectRouter } from "./routes/project.routes";
 
 export const app = express();
 
@@ -64,6 +65,7 @@ app.use("/uploads", express.static("public/uploads"));
 app.use("/api/profile", profileRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/cv", cvRouter);
+app.use("/api/projects", projectRouter);
 
 // ✅ Swagger
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -13,6 +13,7 @@ import { app } from "./app";
 import { sequelize } from "./config/database";
 // Import models so Sequelize knows about them for table creation
 import "./models/Profile";
+import "./models/Project";
 
 const PORT = Number(process.env.PORT) || 4000;
 
