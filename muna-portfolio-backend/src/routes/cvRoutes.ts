@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { Profile } from "../models/Profile";
+import { uploadToS3, deleteFromS3, isS3Configured, extractS3Key } from "../services/s3Service";
 
 export const cvRouter = Router();
 
@@ -114,41 +115,90 @@ cvRouter.get("/", async (_req, res) => {
  *         description: Failed to upload CV
  */
 cvRouter.post("/upload", upload.single("cv"), async (req, res) => {
+  let uploadedFilePath: string | null = null;
+  
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
+    uploadedFilePath = req.file.path;
+
     // Get the latest profile
     const profile = await Profile.findOne({ order: [["id", "DESC"]] });
     if (!profile) {
       // Delete the uploaded file if profile not found
-      fs.unlinkSync(req.file.path);
+      if (fs.existsSync(uploadedFilePath)) {
+        fs.unlinkSync(uploadedFilePath);
+      }
       return res.status(404).json({ message: "No profile found" });
     }
 
-    // Delete old CV file if it exists and is a local file
-    if (profile.cv && profile.cv.startsWith("/uploads/")) {
-      const oldFilePath = path.join(process.cwd(), "public", profile.cv);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
+    let cvUrl: string;
+
+    // Upload to S3 if configured, otherwise use local storage
+    if (isS3Configured()) {
+      try {
+        // Upload to S3
+        const s3Key = `cv/${req.file.filename}`;
+        cvUrl = await uploadToS3(
+          uploadedFilePath,
+          s3Key,
+          req.file.mimetype
+        );
+
+        // Delete old CV file from S3 if it exists
+        if (profile.cv) {
+          const oldS3Key = extractS3Key(profile.cv);
+          if (oldS3Key) {
+            await deleteFromS3(oldS3Key);
+          } else if (profile.cv.startsWith("/uploads/")) {
+            // Old local file - try to delete from local storage
+            const oldFilePath = path.join(process.cwd(), "public", profile.cv);
+            if (fs.existsSync(oldFilePath)) {
+              fs.unlinkSync(oldFilePath);
+            }
+          }
+        }
+
+        // Clean up local temporary file after S3 upload
+        if (fs.existsSync(uploadedFilePath)) {
+          fs.unlinkSync(uploadedFilePath);
+        }
+
+        console.log("✅ CV uploaded to S3:", cvUrl);
+      } catch (s3Error: any) {
+        console.error("S3 upload error, falling back to local storage:", s3Error);
+        // Fall back to local storage if S3 fails
+        cvUrl = `/uploads/${req.file.filename}`;
+      }
+    } else {
+      // Use local storage
+      cvUrl = `/uploads/${req.file.filename}`;
+
+      // Delete old CV file if it exists and is a local file
+      if (profile.cv && profile.cv.startsWith("/uploads/")) {
+        const oldFilePath = path.join(process.cwd(), "public", profile.cv);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
       }
     }
 
     // Update profile with new CV URL
-    const cvUrl = `/uploads/${req.file.filename}`;
     await profile.update({ cv: cvUrl });
 
     return res.json({
       message: "CV uploaded successfully",
       cv: cvUrl,
+      storage: isS3Configured() ? "S3" : "local",
     });
   } catch (err: any) {
     console.error("UPLOAD CV ERROR:", err);
     
     // Delete uploaded file if there was an error
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
+      fs.unlinkSync(uploadedFilePath);
     }
 
     if (err.message && err.message.includes("are allowed")) {
