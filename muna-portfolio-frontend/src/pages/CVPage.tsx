@@ -18,6 +18,7 @@ export const CVPage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileAttributes>(fallbackProfile);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cvLoadError, setCvLoadError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -162,11 +163,63 @@ export const CVPage: React.FC = () => {
                   Preview
                 </label>
                 <div className="rounded-lg border border-slate-700 bg-slate-900 overflow-hidden">
-                  {profile.cv.endsWith('.pdf') || profile.cv.includes('.pdf') ? (
+                  {cvLoadError ? (
+                    <div className="p-8 text-center">
+                      <svg
+                        className="mx-auto h-16 w-16 text-amber-500 mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      <p className="text-amber-300 text-sm font-medium mb-2">
+                        CV file not found
+                      </p>
+                      <p className="text-slate-400 text-xs mb-4 max-w-md mx-auto">
+                        The CV file may have been deleted due to server restart. Please re-upload your CV using the Swagger UI at{" "}
+                        <a
+                          href={`${getBackendUrl("")}/api/docs`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-indigo-400 hover:text-indigo-300 underline"
+                        >
+                          {getBackendUrl("")}/api/docs
+                        </a>
+                        {" "}→ POST /api/cv/upload
+                      </p>
+                      <a
+                        href={getCVUrl(profile.cv) || "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-full border border-slate-600 bg-slate-900 px-6 py-3 text-sm font-medium text-slate-100 hover:bg-slate-800 transition"
+                      >
+                        Try Opening Direct Link
+                      </a>
+                    </div>
+                  ) : profile.cv.endsWith('.pdf') || profile.cv.includes('.pdf') ? (
                     <iframe
                       src={getCVUrl(profile.cv) || ""}
                       className="w-full h-[600px] border-0"
                       title="CV Preview"
+                      onError={() => setCvLoadError(true)}
+                      onLoad={(e) => {
+                        // Check if iframe loaded an error page
+                        try {
+                          const iframe = e.target as HTMLIFrameElement;
+                          if (iframe.contentDocument?.body?.textContent?.includes('Cannot GET')) {
+                            setCvLoadError(true);
+                          }
+                        } catch (err) {
+                          // Cross-origin restrictions may prevent access
+                          // We'll rely on the onError handler
+                        }
+                      }}
                     />
                   ) : profile.cv.endsWith('.docx') || profile.cv.endsWith('.doc') || profile.cv.includes('.docx') || profile.cv.includes('.doc') ? (
                     <div className="p-8 text-center">
@@ -200,6 +253,7 @@ export const CVPage: React.FC = () => {
                       src={getCVUrl(profile.cv) || ""}
                       className="w-full h-[600px] border-0"
                       title="CV Preview"
+                      onError={() => setCvLoadError(true)}
                     />
                   )}
                 </div>

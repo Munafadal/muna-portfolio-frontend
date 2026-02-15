@@ -136,6 +136,15 @@ cvRouter.post("/upload", upload.single("cv"), async (req, res) => {
 
     let cvUrl: string;
 
+    // Debug: Log S3 configuration status
+    console.log("🔍 S3 Configuration Check:", {
+      hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+      hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY,
+      hasBucket: !!process.env.AWS_S3_BUCKET_NAME,
+      hasRegion: !!process.env.AWS_REGION,
+      isS3Configured: isS3Configured(),
+    });
+
     // Upload to S3 if configured, otherwise use local storage
     if (isS3Configured()) {
       try {
