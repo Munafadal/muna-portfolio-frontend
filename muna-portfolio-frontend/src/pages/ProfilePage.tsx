@@ -1,9 +1,7 @@
 // src/pages/ProfilePage.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { getApiUrl, getBackendUrl } from "../config/api";
+import { getApiUrl } from "../config/api";
 
-// Frontend version of your ProfileAttributes
 type ProfileAttributes = {
   id: number;
   name: string;
@@ -19,18 +17,17 @@ type ProfileAttributes = {
   twitter: string | null;
   cv: string | null;
   linkedin: string | null;
-  expectedSalery: number | null; // (typo kept to match your existing UI)
+  expectedSalery: number | null;
   ownACar: boolean;
   haveDrivingLicence: boolean;
   noticePeriod: string | null;
   immigrationStatus: string | null;
   references: string | null;
   willingToRelocate: boolean;
-  languages: string | null; // "English, Arabic"
-  skills: string | null; // "Node.js, TypeScript"
+  languages: string | null;
+  skills: string | null;
 };
 
-// TEMP fallback – used until API loads or if API fails
 const fallbackProfile: ProfileAttributes = {
   id: 1,
   name: "Muna Osman",
@@ -44,7 +41,7 @@ const fallbackProfile: ProfileAttributes = {
   address: "London, United Kingdom",
   github: "https://github.com/your-github",
   twitter: null,
-  cv: "/uploads/cv-1769939464737-895233691.docx ", // ✅ add this (or null)
+  cv: "/uploads/cv-1769939464737-895233691.docx",
   linkedin: "https://linkedin.com/in/your-linkedin",
   expectedSalery: 65000,
   ownACar: false,
@@ -56,7 +53,6 @@ const fallbackProfile: ProfileAttributes = {
   languages: "English, Arabic, Somali",
   skills: "React, TypeScript, Node.js, Vite, Tailwind CSS, REST APIs",
 };
-
 
 const toList = (value: string | null) =>
   value
@@ -70,8 +66,6 @@ export const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileAttributes>(fallbackProfile);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-
 
   useEffect(() => {
     let cancelled = false;
@@ -88,14 +82,18 @@ export const ProfilePage: React.FC = () => {
         }
 
         const data: ProfileAttributes = await res.json();
-        if (!cancelled) setProfile(data);
+
+        if (!cancelled) {
+          setProfile(data);
+        }
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Failed to load profile");
-          // keep fallbackProfile in UI
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     })();
 
@@ -104,37 +102,42 @@ export const ProfilePage: React.FC = () => {
     };
   }, []);
 
-  const languageList = useMemo(() => toList(profile.languages), [profile.languages]);
+  const languageList = useMemo(
+    () => toList(profile.languages),
+    [profile.languages],
+  );
   const skillList = useMemo(() => toList(profile.skills), [profile.skills]);
+  const cvUrl = profile.cv ? getApiUrl("/api/cv/file") : null;
 
   return (
     <div className="space-y-14">
-      {/* Optional status row */}
       {(loading || error) && (
         <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 text-xs text-slate-300">
           {loading ? "Loading profile…" : null}
-          {error ? <span className="text-rose-300">Couldn’t load profile: {error}</span> : null}
+          {error ? (
+            <span className="text-rose-300">
+              Couldn’t load profile: {error}
+            </span>
+          ) : null}
         </div>
       )}
 
-      {/* HERO SECTION – uses name, bio, availability, stack */}
-      <section className="grid gap-10 md:grid-cols-[3fr,2fr] items-center">
-        {/* Left */}
+      <section className="grid items-center gap-10 md:grid-cols-[3fr,2fr]">
         <div className="space-y-6">
           {profile.availability && (
-            <span className="inline-flex items-center rounded-full bg-slate-900/80 border border-slate-700 px-3 py-1 text-xs font-medium text-slate-100/90">
+            <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-100/90">
               {profile.availability}
             </span>
           )}
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Hi, I&apos;m {profile.name.split(" ")[0]}.
             <span className="block bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-sky-300 bg-clip-text text-transparent">
               Software Development Engineer.
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
+          <p className="max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
             {profile.bio ||
               "I build modern web applications with a focus on clean code, performance and great user experience."}
           </p>
@@ -146,49 +149,73 @@ export const ProfilePage: React.FC = () => {
                 <span>{profile.location}</span>
               </div>
             )}
+
             <div className="flex items-center gap-2">
               <span className="font-semibold text-slate-200">Email:</span>
               <span>{profile.email}</span>
             </div>
+
             {profile.nationality && (
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-200">Nationality:</span>
+                <span className="font-semibold text-slate-200">
+                  Nationality:
+                </span>
                 <span>{profile.nationality}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right – profile card */}
         <div className="relative">
           <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-indigo-700/40 via-fuchsia-600/35 to-sky-500/40 blur-3xl opacity-80" />
-          <div className="rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-2xl shadow-black/50 backdrop-blur-xl space-y-5">
+
+          <div className="space-y-5 rounded-3xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-2xl shadow-black/50 backdrop-blur-xl">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-2xl font-semibold text-white">
                 {profile.name.charAt(0)}
               </div>
+
               <div>
-                <div className="text-sm font-semibold text-white">{profile.name}</div>
-                <div className="text-xs text-slate-400">Software Development Engineer</div>
-                {profile.location && <div className="text-[11px] text-slate-500">{profile.location}</div>}
+                <div className="text-sm font-semibold text-white">
+                  {profile.name}
+                </div>
+                <div className="text-xs text-slate-400">
+                  Software Development Engineer
+                </div>
+                {profile.location && (
+                  <div className="text-[11px] text-slate-500">
+                    {profile.location}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+            <div className="grid grid-cols-1 gap-3 text-xs text-slate-300 sm:grid-cols-2">
               <div className="space-y-1">
                 <p className="text-[11px] text-slate-400">Expected salary</p>
                 <p className="text-sm font-semibold text-slate-100">
-                  {profile.expectedSalery ? `£${profile.expectedSalery.toLocaleString()}` : "Negotiable"}
+                  {profile.expectedSalery
+                    ? `£${profile.expectedSalery.toLocaleString()}`
+                    : "Negotiable"}
                 </p>
               </div>
+
               <div className="space-y-1">
                 <p className="text-[11px] text-slate-400">Notice period</p>
-                <p className="text-sm font-semibold text-slate-100">{profile.noticePeriod || "Flexible"}</p>
+                <p className="text-sm font-semibold text-slate-100">
+                  {profile.noticePeriod || "Flexible"}
+                </p>
               </div>
+
               <div className="space-y-1">
-                <p className="text-[11px] text-slate-400">Willing to relocate</p>
-                <p className="text-sm font-semibold text-slate-100">{profile.willingToRelocate ? "Yes" : "No"}</p>
+                <p className="text-[11px] text-slate-400">
+                  Willing to relocate
+                </p>
+                <p className="text-sm font-semibold text-slate-100">
+                  {profile.willingToRelocate ? "Yes" : "No"}
+                </p>
               </div>
+
               <div className="space-y-1">
                 <p className="text-[11px] text-slate-400">Immigration status</p>
                 <p className="text-sm font-semibold text-slate-100">
@@ -197,77 +224,85 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 pt-1">
+            <div className="grid grid-cols-1 gap-3 pt-1 text-xs text-slate-300 sm:grid-cols-2">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
                 <span>
-                  Driving licence: <span className="font-semibold">{profile.haveDrivingLicence ? "Yes" : "No"}</span>
+                  Driving licence:{" "}
+                  <span className="font-semibold">
+                    {profile.haveDrivingLicence ? "Yes" : "No"}
+                  </span>
                 </span>
               </div>
+
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-sky-400" />
                 <span>
-                  Own a car: <span className="font-semibold">{profile.ownACar ? "Yes" : "No"}</span>
+                  Own a car:{" "}
+                  <span className="font-semibold">
+                    {profile.ownACar ? "Yes" : "No"}
+                  </span>
                 </span>
               </div>
             </div>
 
-<div className="pt-2 space-y-2 text-xs">
-  <p className="text-[11px] text-slate-400">Links</p>
+            <div className="space-y-2 pt-2 text-xs">
+              <p className="text-[11px] text-slate-400">Links</p>
 
-  <div className="flex flex-wrap gap-2">
-    {profile.cv && (
-      <Link
-        to="/cv"
-        className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 hover:border-emerald-500 hover:text-white transition"
-      >
-        CV
-      </Link>
-    )}
+              <div className="flex flex-wrap gap-2">
+                {cvUrl && (
+                  <a
+                    href={cvUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 transition hover:border-emerald-500 hover:text-white"
+                  >
+                    CV
+                  </a>
+                )}
 
-    {profile.github && (
-      <a
-        href={profile.github}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 hover:border-indigo-500 hover:text-white transition"
-      >
-        GitHub
-      </a>
-    )}
+                {profile.github && (
+                  <a
+                    href={profile.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 transition hover:border-indigo-500 hover:text-white"
+                  >
+                    GitHub
+                  </a>
+                )}
 
-    {profile.linkedin && (
-      <a
-        href={profile.linkedin}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 hover:border-sky-500 hover:text-white transition"
-      >
-        LinkedIn
-      </a>
-    )}
+                {profile.linkedin && (
+                  <a
+                    href={profile.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 transition hover:border-sky-500 hover:text-white"
+                  >
+                    LinkedIn
+                  </a>
+                )}
 
-    {profile.twitter && (
-      <a
-        href={profile.twitter}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 hover:border-sky-400 hover:text-white transition"
-      >
-        Twitter
-      </a>
-    )}
-  </div>
-</div>
-
+                {profile.twitter && (
+                  <a
+                    href={profile.twitter}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] text-slate-200 transition hover:border-sky-400 hover:text-white"
+                  >
+                    Twitter
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* SKILLS & LANGUAGES */}
       <section className="grid gap-6 md:grid-cols-[3fr,2fr]">
         <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-6 shadow-lg shadow-black/40">
-          <h2 className="text-sm font-semibold text-slate-50 mb-3">Skills</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-50">Skills</h2>
+
           {skillList.length ? (
             <div className="flex flex-wrap gap-2 text-[11px]">
               {skillList.map((skill) => (
@@ -285,7 +320,10 @@ export const ProfilePage: React.FC = () => {
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-6 shadow-lg shadow-black/40">
-          <h2 className="text-sm font-semibold text-slate-50 mb-3">Languages</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-50">
+            Languages
+          </h2>
+
           {languageList.length ? (
             <div className="flex flex-wrap gap-2 text-[11px]">
               {languageList.map((lang) => (
@@ -298,15 +336,16 @@ export const ProfilePage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-xs text-slate-400">Languages not specified yet.</p>
+            <p className="text-xs text-slate-400">
+              Languages not specified yet.
+            </p>
           )}
         </div>
       </section>
 
-      {/* REFERENCES */}
       <section className="rounded-2xl border border-slate-800 bg-slate-950/80 p-6 shadow-lg shadow-black/40">
-        <h2 className="text-sm font-semibold text-slate-50 mb-2">References</h2>
-        <p className="text-xs text-slate-300 leading-relaxed">
+        <h2 className="mb-2 text-sm font-semibold text-slate-50">References</h2>
+        <p className="text-xs leading-relaxed text-slate-300">
           {profile.references || "References available on request."}
         </p>
       </section>

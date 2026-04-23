@@ -82,6 +82,49 @@ cvRouter.get("/", async (_req, res) => {
 
 /**
  * @openapi
+ * /api/cv/file:
+ *   get:
+ *     summary: Stream or redirect to the latest CV file
+ *     responses:
+ *       200:
+ *         description: CV file returned
+ *       404:
+ *         description: CV file not found
+ *       500:
+ *         description: Failed to load CV file
+ */
+cvRouter.get("/file", async (_req, res) => {
+  try {
+    const profile = await Profile.findOne({ order: [["id", "DESC"]] });
+    if (!profile || !profile.cv) {
+      return res.status(404).json({ message: "No CV found" });
+    }
+
+    const cv = profile.cv;
+
+    if (cv.startsWith("http://") || cv.startsWith("https://")) {
+      return res.redirect(cv);
+    }
+
+    if (cv.startsWith("/uploads/")) {
+      const localFilePath = path.join(process.cwd(), "public", cv);
+      if (!fs.existsSync(localFilePath)) {
+        return res.status(404).json({
+          message: "CV file is missing from server storage. Please re-upload your CV.",
+        });
+      }
+      return res.sendFile(localFilePath);
+    }
+
+    return res.status(400).json({ message: "Unsupported CV path format" });
+  } catch (err) {
+    console.error("GET CV FILE ERROR:", err);
+    return res.status(500).json({ message: "Failed to load CV file" });
+  }
+});
+
+/**
+ * @openapi
  * /api/cv/upload:
  *   post:
  *     summary: Upload a CV file and update the profile
@@ -136,15 +179,6 @@ cvRouter.post("/upload", upload.single("cv"), async (req, res) => {
 
     let cvUrl: string;
 
-    // Debug: Log S3 configuration status
-    console.log("🔍 S3 Configuration Check:", {
-      hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
-      hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY,
-      hasBucket: !!process.env.AWS_S3_BUCKET_NAME,
-      hasRegion: !!process.env.AWS_REGION,
-      isS3Configured: isS3Configured(),
-    });
-
     // Upload to S3 if configured, otherwise use local storage
     if (isS3Configured()) {
       try {
@@ -174,8 +208,6 @@ cvRouter.post("/upload", upload.single("cv"), async (req, res) => {
         if (fs.existsSync(uploadedFilePath)) {
           fs.unlinkSync(uploadedFilePath);
         }
-
-        console.log("✅ CV uploaded to S3:", cvUrl);
       } catch (s3Error: any) {
         console.error("S3 upload error, falling back to local storage:", s3Error);
         // Fall back to local storage if S3 fails
