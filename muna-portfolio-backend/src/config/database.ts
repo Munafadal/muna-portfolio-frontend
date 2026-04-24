@@ -1,24 +1,19 @@
 import { Sequelize } from "sequelize";
-import pg from "pg";
+import dotenv from "dotenv";
 
-const dbUrl = process.env.DATABASE_URL;
+dotenv.config();
 
-if (!dbUrl) {
-  throw new Error("DATABASE_URL is not set");
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing");
 }
 
-const useSsl = dbUrl.includes("sslmode=require") || dbUrl.includes("ssl=true");
-
-export const sequelize = new Sequelize(dbUrl, {
+export const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
-  dialectModule: pg,
   logging: false,
-  dialectOptions: useSsl
-    ? {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false,
-        },
-      }
-    : {},
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 });
